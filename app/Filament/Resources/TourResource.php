@@ -177,8 +177,7 @@ class TourResource extends Resource
                             ->directory('tours')
                             ->disk('public')
                             ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, BaseFileUpload $component) {
-                                // 1. Сохраняем оригинал на диск public/headers/
-                                $pathOriginal = $file->store('headers', 'public');
+                                $pathOriginal = $file->store('tours', 'public');
 
 
                                 $originalAbsolutePath = Storage::disk('public')->path($pathOriginal);
