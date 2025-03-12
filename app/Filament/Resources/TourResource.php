@@ -6,6 +6,7 @@ use App\Filament\Resources\TourResource\Pages;
 use App\Models\Tour;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -177,9 +178,9 @@ class TourResource extends Resource
                             ->disk('public')      // или любая другая файловая система
                             ->directory('headers') // папка на диске
                             // ->visibility('public') // если нужно
-                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, $state, Closure $set, $livewire) {
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, BaseFileUpload $component) {
 
-                                $record = $livewire->record;
+                                $record = $component->getRecord();;
                                 $media = $record
                                     ->addMedia($file->getRealPath())
                                     ->usingFileName($file->getClientOriginalName())
