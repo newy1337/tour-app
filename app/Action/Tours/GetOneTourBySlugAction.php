@@ -18,6 +18,7 @@ class GetOneTourBySlugAction
         $extension = pathinfo($pathOriginal, PATHINFO_EXTENSION);
 
         $tour->header_image = "{$filenameWithoutExt}1400x470.{$extension}";
+        return $tour;
 
 
     }
