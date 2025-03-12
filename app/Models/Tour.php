@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\ImageCast;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\MediaCollections\FileAdder;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -19,7 +20,7 @@ class Tour extends Model
         'images' => 'array',
         'program' => 'array',
         'description' => 'array',
-        'header_image' => '',
+        'header_image' => ImageCast::class,
         'tags' => 'array'
     ];
 
