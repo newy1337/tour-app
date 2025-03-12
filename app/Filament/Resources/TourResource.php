@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TourResource\Pages;
 use App\Models\Tour;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
@@ -19,8 +20,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class TourResource extends Resource
 {
@@ -170,9 +171,22 @@ class TourResource extends Resource
                     ->schema([
                         FileUpload::make('header_image')
                             ->label('Главное изображение')
+                            ->required()
                             ->image()
                             ->imagePreviewHeight('50')
-                            ->required(),
+                            ->disk('public')      // или любая другая файловая система
+                            ->directory('headers') // папка на диске
+                            // ->visibility('public') // если нужно
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, $state, Closure $set, $livewire) {
+
+                                $record = $livewire->record;
+                                $media = $record
+                                    ->addMedia($file->getRealPath())
+                                    ->usingFileName($file->getClientOriginalName())
+                                    ->toMediaCollection('header_image');
+
+                                $set('header_image', $media->getPath());
+                            }),
 
                         FileUpload::make('images')
                             ->label('Галерея')
@@ -247,6 +261,18 @@ class TourResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['slug'] = Str::slug($data['title']);
+        return $data;
+    }
+
+    protected static function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['slug'] = Str::slug($data['title']);
+        return $data;
     }
 
     public static function getRelations(): array
