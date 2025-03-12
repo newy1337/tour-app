@@ -176,18 +176,8 @@ class TourResource extends Resource
                             ->image()
                             ->imagePreviewHeight('50')
                             ->disk('public')      // или любая другая файловая система
-                            ->directory('headers') // папка на диске
+                            ->directory('headers'), // папка на диске
                             // ->visibility('public') // если нужно
-                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, BaseFileUpload $component) {
-
-                                $record = $component->getRecord();;
-                                $media = $record
-                                    ->addMedia($file->getRealPath())
-                                    ->usingFileName($file->getClientOriginalName())
-                                    ->toMediaCollection('header_image');
-
-                                $set('header_image', $media->getPath());
-                            }),
 
                         FileUpload::make('images')
                             ->label('Галерея')
@@ -262,6 +252,16 @@ class TourResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function afterCreate(Tour $record): void
+    {
+        if ($record->header_image) {
+            $record
+                ->addMediaFromDisk($record->header_image, 'public')
+                ->toMediaCollection('header_image');
+
+        }
     }
 
     protected static function mutateFormDataBeforeCreate(array $data): array
