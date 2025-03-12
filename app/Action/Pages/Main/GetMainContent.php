@@ -26,6 +26,7 @@ class GetMainContent
             'title',
             'title_description',
             'price',
+            'header_image',
             'price_discount',
             'rating',
             'tags',
