@@ -14,6 +14,9 @@ class ImagesArrCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if (str_contains($value,'http')) {
+            return $value;
+        }
         $value = json_decode($value,true);
         $baseUrl = url('/');
         foreach ($value as &$item) {

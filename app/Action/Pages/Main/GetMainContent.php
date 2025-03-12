@@ -13,17 +13,13 @@ class GetMainContent
 
         return [
             'tours' => Tour::inRandomOrder()->take(6)->get($this->returnModel())->map(function ($tour) {
-                $tour->header_image = $this->resizeImage($tour->header_image);
+                $attributes = $tour->getAttributes();
+                $attributes['header_image'] = $this->resizeImage($tour->getOriginal('header_image'));
+                $tour->setRawAttributes($attributes, false);
                 return $tour;
             }),
-            'new_tours' => Tour::orderBy('created_at', 'desc')->take(3)->get($this->returnModel())->map(function ($tour) {
-                $tour->header_image = $this->resizeImage($tour->header_image);
-                return $tour;
-            }),
-            'special_tours' => Tour::orderBy('price_discount', 'desc')->take(3)->get($this->returnModel())->map(function ($tour) {
-                $tour->header_image = $this->resizeImage($tour->header_image);
-                return $tour;
-            }),
+            'new_tours' => Tour::orderBy('created_at', 'desc')->take(3)->get($this->returnModel()),
+            'special_tours' => Tour::orderBy('price_discount', 'desc')->take(3)->get($this->returnModel()),
             'reviews' => TourReviews::take(3)->get()
         ];
     }
@@ -45,12 +41,12 @@ class GetMainContent
     }
 
 
-    private function resizeImage($image)
+    private function resizeImage($image): string
     {
         $filenameWithoutExt = pathinfo($image, PATHINFO_FILENAME);
         $extension = pathinfo($image, PATHINFO_EXTENSION);
-
-        return "{$filenameWithoutExt}_800x533.{$extension}";
+        $baseUrl = url('/');
+        return "{$baseUrl}/storage/tours/{$filenameWithoutExt}_800x533.{$extension}";
 
     }
 
