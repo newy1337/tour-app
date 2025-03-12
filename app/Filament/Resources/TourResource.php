@@ -197,11 +197,8 @@ class TourResource extends Resource
                                     $newFileName = $filenameWithoutExt . "_{$width}x{$height}." . $extension;
 
                                     // Загружаем оригинал заново (чтобы каждое ресайзить «с нуля»)
-                                    $resized = Image::make($originalAbsolutePath)
-                                        ->resize($width, $height, function ($constraint) {
-                                            $constraint->aspectRatio();
-                                            $constraint->upsize();
-                                        });
+                                    $resized = Image::read($originalAbsolutePath)
+                                        ->resize($width, $height);
 
                                     // Сохраняем в той же папке
                                     $resized->save(Storage::disk('public')->path("headers/{$newFileName}"));
@@ -220,7 +217,7 @@ class TourResource extends Resource
                             ->imagePreviewHeight('50')
                             ->directory('tours')
                             ->storeFiles()
-                            ->required(),
+//                            ->required(),
                     ])
                     ->collapsible(),
             ]);
