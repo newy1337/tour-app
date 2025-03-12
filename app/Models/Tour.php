@@ -19,7 +19,7 @@ class Tour extends Model
         'images' => 'array',
         'program' => 'array',
         'description' => 'array',
-        'header_image' => 'array',
+        'header_image' => '',
         'tags' => 'array'
     ];
 
