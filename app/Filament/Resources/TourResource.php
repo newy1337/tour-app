@@ -180,14 +180,12 @@ class TourResource extends Resource
                                 // 1. Сохраняем оригинал на диск public/headers/
                                 $pathOriginal = $file->store('headers', 'public');
 
+
                                 $originalAbsolutePath = Storage::disk('public')->path($pathOriginal);
 
-                                // 3. Разбираем исходное имя (понадобится для генерации новых имён)
-                                $originalName = $file->getClientOriginalName(); // может быть с пробелами
-                                $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
-                                $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+                                $filenameWithoutExt = pathinfo($originalAbsolutePath, PATHINFO_FILENAME);
+                                $extension = pathinfo($originalAbsolutePath, PATHINFO_EXTENSION);
 
-                                // 4. Создаём нужные размеры
                                 $sizes = [
                                     [800, 533],
                                     [1000, 470],
@@ -196,17 +194,13 @@ class TourResource extends Resource
                                 foreach ($sizes as [$width, $height]) {
                                     $newFileName = $filenameWithoutExt . "_{$width}x{$height}." . $extension;
 
-                                    // Загружаем оригинал заново (чтобы каждое ресайзить «с нуля»)
                                     $resized = Image::read($originalAbsolutePath)
                                         ->resize($width, $height);
 
-                                    // Сохраняем в той же папке
-                                    $resized->save(Storage::disk('public')->path("headers/{$newFileName}"));
+                                    $resized->save(Storage::disk('public')->path("tours/{$newFileName}"));
                                 }
 
-                                // 5. Сохраняем значение, которое Filament положит в поле "header_image" в БД
-                                //    Обычно это путь к оригиналу, но можно вернуть JSON с путями и т. д.
-                                $component->state($pathOriginal); // обновим state вручную
+                                $component->state($pathOriginal);
                                 return $pathOriginal;
                             }),
 
@@ -285,17 +279,6 @@ class TourResource extends Resource
             ]);
     }
 
-    protected static function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['slug'] = Str::slug($data['title']);
-        return $data;
-    }
-
-    protected static function mutateFormDataBeforeSave(array $data): array
-    {
-        $data['slug'] = Str::slug($data['title']);
-        return $data;
-    }
 
     public static function getRelations(): array
     {

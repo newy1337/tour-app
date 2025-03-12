@@ -15,6 +15,8 @@ Route::get('/tours/{slug}',[TourController::class,'getOne']);
 
 
 
+Route::post('/contact',[TourController::class,'contact']);
+
 
 
 //Route::get('/create', function () {

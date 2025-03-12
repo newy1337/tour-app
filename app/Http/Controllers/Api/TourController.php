@@ -18,4 +18,14 @@ class TourController extends Controller
     {
         return $getOneTourBySlugAction($slug);
     }
+
+    public function contact(Request $request)
+    {
+        return [
+          'name' => $request->name,
+          'phone' => $request->phone,
+          'tour_slug' => $request->tour_slug,
+          'peopleCount' => $request->peopleCount,
+        ];
+    }
 }
