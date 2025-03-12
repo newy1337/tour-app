@@ -31,6 +31,7 @@ class GetMainContent
         return [
             'title',
             'title_description',
+            'slug',
             'price',
             'header_image',
             'price_discount',
