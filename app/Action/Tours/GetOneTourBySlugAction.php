@@ -7,10 +7,10 @@ use App\Models\Tour;
 class GetOneTourBySlugAction
 {
 
-    public function __invoke()
+    public function __invoke($slug)
     {
 
-       return Tour::find(4);
+        return Tour::where('slug', $slug)->firstOrFail();
 
     }
 

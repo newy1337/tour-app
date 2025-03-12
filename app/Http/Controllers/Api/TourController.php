@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Action\Tours\GetOneTourBySlugAction;
+use App\Action\Tours\GetToursAction;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class TourController extends Controller
 {
 
-    public function getOne(GetOneTourBySlugAction $getOneTourBySlugAction)
+    public function getAll(Request $request, GetToursAction $getToursAction)
     {
-        return $getOneTourBySlugAction();
+        return $getToursAction($request);
+    }
+    public function getOne(string $slug, GetOneTourBySlugAction $getOneTourBySlugAction)
+    {
+        return $getOneTourBySlugAction($slug);
     }
 }

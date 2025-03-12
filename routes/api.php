@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',[PageController::class,'getMain']);
 
 
-Route::get('/tours/{id}',[TourController::class,'getOne']);
+
+Route::get('/tours/',[TourController::class,'getAll']);
+
+Route::get('/tours/{slug}',[TourController::class,'getOne']);
 
 
 
