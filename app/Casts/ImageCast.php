@@ -14,10 +14,8 @@ class ImageCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        $filenameWithoutExt = pathinfo($value, PATHINFO_FILENAME);
-        $extension = pathinfo($value, PATHINFO_EXTENSION);
         $baseUrl = url('/');
-        return "{$baseUrl}/storage/tours/{$filenameWithoutExt}.{$extension}";
+        return "{$baseUrl}/storage/$value";
     }
 
     /**

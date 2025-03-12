@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Casts\ImageCast;
+use App\Casts\ImageProgramCast;
+use App\Casts\ImagesArrCast;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\MediaCollections\FileAdder;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -17,8 +19,8 @@ class Tour extends Model
 
 
     protected $casts = [
-        'images' => 'array',
-        'program' => 'array',
+        'images' => ImagesArrCast::class,
+        'program' => ImageProgramCast::class,
         'description' => 'array',
         'header_image' => ImageCast::class,
         'tags' => 'array'
