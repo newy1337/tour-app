@@ -19,10 +19,10 @@ class Tour extends Model
 
 
     protected $casts = [
-        'images' => ImagesArrCast::class,
-        'program' => ImageProgramCast::class,
+        'images' => 'array',
+        'program' => 'json',
         'description' => 'array',
-        'header_image' => ImageCast::class,
+        'header_image' => 'string',
         'tags' => 'array'
     ];
 
