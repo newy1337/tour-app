@@ -15,6 +15,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Tour extends Model
 {
 
+    /**
+     * @var float|int|mixed
+     */
     protected $guarded = [];
 
 

@@ -17,7 +17,10 @@ class GetMainContent
                 return $tour;
             }),
             'new_tours' => Tour::orderBy('created_at', 'desc')->take(3)->get($this->returnModel()),
-            'special_tours' => Tour::orderBy('price_discount', 'desc')->take(3)->get($this->returnModel()),
+            'special_tours' => Tour::orderBy('price_discount', 'desc')->take(3)->get($this->returnModel())->map(function (Tour $tour) {
+                $tour->price_with_discount = $tour->price - ($tour->price * $tour->price_discount / 100);
+                return $tour;
+            }),
             'reviews' => TourReviews::take(3)->get()
         ];
     }

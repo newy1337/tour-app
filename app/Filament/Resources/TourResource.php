@@ -88,7 +88,8 @@ class TourResource extends Resource
                                     ->required(),
 
                                 TextInput::make('price_discount')
-                                    ->label('Скидка')
+                                    ->label('Процент скидки')
+                                    ->default(0)
                                     ->numeric()
                                     ->required(),
                             ]),
@@ -152,6 +153,7 @@ class TourResource extends Resource
                                 FileUpload::make('image')
                                     ->label('Изображение')
                                     ->image()
+                                    ->required()
 
                                     ->directory('program-images')
                                     ->required(),
@@ -210,7 +212,7 @@ class TourResource extends Resource
                             ->imagePreviewHeight('50')
                             ->directory('tours')
                             ->storeFiles()
-//                            ->required(),
+                            ->required(),
                     ])
                     ->collapsible(),
             ]);
@@ -277,6 +279,8 @@ class TourResource extends Resource
                 ]),
             ]);
     }
+
+
 
 
     public static function getRelations(): array
