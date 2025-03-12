@@ -188,7 +188,7 @@ class TourResource extends Resource
 
                                 $sizes = [
                                     [800, 533],
-                                    [1000, 470],
+                                    [1400, 470],
                                 ];
 
                                 foreach ($sizes as [$width, $height]) {

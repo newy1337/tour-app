@@ -12,9 +12,18 @@ class GetMainContent
     {
 
         return [
-            'tours' => Tour::inRandomOrder()->take(6)->get($this->returnModel()),
-            'new_tours' => Tour::orderBy('created_at', 'desc')->take(3)->get($this->returnModel()),
-            'special_tours' => Tour::orderBy('price_discount', 'desc')->take(3)->get($this->returnModel()),
+            'tours' => Tour::inRandomOrder()->take(6)->get($this->returnModel())->map(function ($tour) {
+                $tour->header_image = $this->resizeImage($tour->header_image);
+                return $tour;
+            }),
+            'new_tours' => Tour::orderBy('created_at', 'desc')->take(3)->get($this->returnModel())->map(function ($tour) {
+                $tour->header_image = $this->resizeImage($tour->header_image);
+                return $tour;
+            }),
+            'special_tours' => Tour::orderBy('price_discount', 'desc')->take(3)->get($this->returnModel())->map(function ($tour) {
+                $tour->header_image = $this->resizeImage($tour->header_image);
+                return $tour;
+            }),
             'reviews' => TourReviews::take(3)->get()
         ];
     }
@@ -32,6 +41,16 @@ class GetMainContent
             'tags',
             'duration',
         ];
+
+    }
+
+
+    private function resizeImage($image)
+    {
+        $filenameWithoutExt = pathinfo($image, PATHINFO_FILENAME);
+        $extension = pathinfo($image, PATHINFO_EXTENSION);
+
+        return "{$filenameWithoutExt}_800x533.{$extension}";
 
     }
 
