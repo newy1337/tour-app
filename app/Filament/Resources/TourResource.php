@@ -6,6 +6,7 @@ use App\Filament\Resources\TourResource\Pages;
 use App\Models\Tour;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -173,43 +174,42 @@ class TourResource extends Resource
                     ->schema([
                         FileUpload::make('header_image')
                             ->label('Главное изображение')
-                            ->required()
-                            ->image()
-                            ->imagePreviewHeight('50')
                             ->directory('tours')
-                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, $state, Closure $set, $livewire) {
+                            ->disk('public')
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, BaseFileUpload $component) {
+                                // 1. Сохраняем оригинал на диск public/headers/
                                 $pathOriginal = $file->store('headers', 'public');
 
-                                $filenameWithoutExt = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                                $extension = $file->getClientOriginalExtension();
-
-
                                 $originalAbsolutePath = Storage::disk('public')->path($pathOriginal);
-                                $image = Image::make($originalAbsolutePath);
 
+                                // 3. Разбираем исходное имя (понадобится для генерации новых имён)
+                                $originalName = $file->getClientOriginalName(); // может быть с пробелами
+                                $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
+                                $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+
+                                // 4. Создаём нужные размеры
                                 $sizes = [
                                     [800, 533],
                                     [1000, 470],
                                 ];
 
                                 foreach ($sizes as [$width, $height]) {
-                                    // Генерируем имя файла: <originalName>_<width>x<height>.<ext>
                                     $newFileName = $filenameWithoutExt . "_{$width}x{$height}." . $extension;
 
-                                    // Создаем Intervention-объект заново из оригинала (чтобы каждое ресайзить с нуля)
+                                    // Загружаем оригинал заново (чтобы каждое ресайзить «с нуля»)
                                     $resized = Image::make($originalAbsolutePath)
                                         ->resize($width, $height, function ($constraint) {
-                                            // Сохраняем пропорции, не растягиваем картинку, если меньше
                                             $constraint->aspectRatio();
                                             $constraint->upsize();
                                         });
 
-                                    // Сохраняем результат в той же папке на диске public
-                                    // Превратить относительный путь "headers/..." в абсолютный для сохранения:
-                                    $resized->save(Storage::disk('public')->path("headers/$newFileName"));
+                                    // Сохраняем в той же папке
+                                    $resized->save(Storage::disk('public')->path("headers/{$newFileName}"));
                                 }
 
-
+                                // 5. Сохраняем значение, которое Filament положит в поле "header_image" в БД
+                                //    Обычно это путь к оригиналу, но можно вернуть JSON с путями и т. д.
+                                $component->state($pathOriginal); // обновим state вручную
                                 return $pathOriginal;
                             }),
 
