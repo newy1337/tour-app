@@ -13,9 +13,7 @@ class GetMainContent
 
         return [
             'tours' => Tour::inRandomOrder()->take(6)->get($this->returnModel())->map(function ($tour) {
-                $attributes = $tour->getAttributes();
-                $attributes['header_image'] = $this->resizeImage($tour->getOriginal('header_image'));
-                $tour->setRawAttributes($attributes, false);
+                $tour->header_image = $this->resizeImage($tour->header_image);
                 return $tour;
             }),
             'new_tours' => Tour::orderBy('created_at', 'desc')->take(3)->get($this->returnModel()),
@@ -45,8 +43,7 @@ class GetMainContent
     {
         $filenameWithoutExt = pathinfo($image, PATHINFO_FILENAME);
         $extension = pathinfo($image, PATHINFO_EXTENSION);
-        $baseUrl = url('/');
-        return "{$baseUrl}/storage/tours/{$filenameWithoutExt}_800x533.{$extension}";
+        return "tours/{$filenameWithoutExt}_800x533.{$extension}";
 
     }
 
