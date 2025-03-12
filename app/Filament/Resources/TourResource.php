@@ -6,7 +6,6 @@ use App\Filament\Resources\TourResource\Pages;
 use App\Models\Tour;
 use Closure;
 use Filament\Forms;
-use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -21,7 +20,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class TourResource extends Resource
@@ -175,9 +176,42 @@ class TourResource extends Resource
                             ->required()
                             ->image()
                             ->imagePreviewHeight('50')
-                            ->disk('public')      // или любая другая файловая система
-                            ->directory('headers'), // папка на диске
-                            // ->visibility('public') // если нужно
+                            ->directory('tours')
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, $state, Closure $set, $livewire) {
+                                $pathOriginal = $file->store('headers', 'public');
+
+                                $filenameWithoutExt = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                                $extension = $file->getClientOriginalExtension();
+
+
+                                $originalAbsolutePath = Storage::disk('public')->path($pathOriginal);
+                                $image = Image::make($originalAbsolutePath);
+
+                                $sizes = [
+                                    [800, 533],
+                                    [1000, 470],
+                                ];
+
+                                foreach ($sizes as [$width, $height]) {
+                                    // Генерируем имя файла: <originalName>_<width>x<height>.<ext>
+                                    $newFileName = $filenameWithoutExt . "_{$width}x{$height}." . $extension;
+
+                                    // Создаем Intervention-объект заново из оригинала (чтобы каждое ресайзить с нуля)
+                                    $resized = Image::make($originalAbsolutePath)
+                                        ->resize($width, $height, function ($constraint) {
+                                            // Сохраняем пропорции, не растягиваем картинку, если меньше
+                                            $constraint->aspectRatio();
+                                            $constraint->upsize();
+                                        });
+
+                                    // Сохраняем результат в той же папке на диске public
+                                    // Превратить относительный путь "headers/..." в абсолютный для сохранения:
+                                    $resized->save(Storage::disk('public')->path("headers/$newFileName"));
+                                }
+
+
+                                return $pathOriginal;
+                            }),
 
                         FileUpload::make('images')
                             ->label('Галерея')
@@ -252,16 +286,6 @@ class TourResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function afterCreate(Tour $record): void
-    {
-        if ($record->header_image) {
-            $record
-                ->addMediaFromDisk($record->header_image, 'public')
-                ->toMediaCollection('header_image');
-
-        }
     }
 
     protected static function mutateFormDataBeforeCreate(array $data): array
