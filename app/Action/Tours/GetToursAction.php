@@ -25,7 +25,10 @@ class GetToursAction
         $paginator =  $query->paginate($perPage,$this->returnModel(),'page',$page);
 
         $data = [
-            'data' => $paginator->items(),
+            'data' => $paginator->items()->map(function ($tour) {
+                $tour->header_image = $this->resizeImage($tour->header_image);
+                return $tour;
+            }),
             'current_page' => $paginator->currentPage(),
             'last_page' => $paginator->lastPage(),
             'per_page' => $paginator->perPage(),
@@ -58,6 +61,14 @@ class GetToursAction
 
         }
         return $query;
+
+    }
+
+    private function resizeImage($image): string
+    {
+        $filenameWithoutExt = pathinfo($image, PATHINFO_FILENAME);
+        $extension = pathinfo($image, PATHINFO_EXTENSION);
+        return "tours/{$filenameWithoutExt}_800x533.{$extension}";
 
     }
 
