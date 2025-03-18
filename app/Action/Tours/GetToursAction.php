@@ -25,7 +25,7 @@ class GetToursAction
         $paginator =  $query->paginate($perPage,$this->returnModel(),'page',$page);
 
         $data = [
-            'data' => $paginator->items()->map(function ($tour) {
+            'data' => collect($paginator->items())->map(function ($tour) {
                 $tour->header_image = $this->resizeImage($tour->header_image);
                 return $tour;
             }),
