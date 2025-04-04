@@ -136,16 +136,6 @@ class TourResource extends Resource
                         Repeater::make('program.list')
                             ->label('Этапы программы')
                             ->schema([
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('duration')
-                                            ->label('Длительность')
-                                            ->required(),
-
-                                        TextInput::make('time')
-                                            ->label('Время')
-                                            ->required(),
-                                    ]),
                                 TextInput::make('step')
                                     ->label('Порядковый номер')
                                     ->numeric()
