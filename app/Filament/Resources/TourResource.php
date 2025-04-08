@@ -150,7 +150,7 @@ class TourResource extends Resource
                                 TextInput::make('title')
                                     ->label('Заголовок шага')
                                     ->required(),
-                                Textarea::make('description')
+                                RichEditor::make('description')
                                     ->label('Описание шага')
                                     ->required(),
                             ])
